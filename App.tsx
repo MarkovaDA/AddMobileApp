@@ -1,49 +1,65 @@
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+  useFonts,
+} from '@expo-google-fonts/roboto';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
+
+import { Gallery } from './components/Gallery';
+import {
+  APP_BACKGROUND_GRADIENT,
+  APP_BACKGROUND_LOCATIONS,
+  HERO_EYEBROW,
+  HERO_SUBTITLE,
+  HERO_TITLE,
+} from './constants';
+
+import { MOSCOW_EVENTS } from './data/events';
+import { appStyles as styles } from './styles';
+import { colors } from './theme';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.icon}>
-        <Text style={styles.iconText}>A</Text>
+  const [fontsLoaded] = useFonts({
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator color={colors.accent} size="large" />
       </View>
-      <Text style={styles.title}>AddMobileApp</Text>
-      <Text style={styles.subtitle}>Ready to start</Text>
-      <StatusBar style="dark" />
+    );
+  }
+
+  return (
+    <View style={styles.root}>
+      <LinearGradient
+        colors={APP_BACKGROUND_GRADIENT}
+        locations={APP_BACKGROUND_LOCATIONS}
+        style={styles.background}
+      />
+
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.header}>
+          <View style={styles.eyebrowRow}>
+            <View style={styles.accentDot} />
+            <Text style={styles.eyebrow}>{HERO_EYEBROW}</Text>
+          </View>
+          <Text style={styles.title}>{HERO_TITLE}</Text>
+          <Text style={styles.subtitle}>{HERO_SUBTITLE}</Text>
+          <View style={styles.divider} />
+        </View>
+
+        <Gallery items={MOSCOW_EVENTS} />
+      </SafeAreaView>
+
+      <StatusBar style="light" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F8FA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  icon: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
-    backgroundColor: '#2563EB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  iconText: {
-    color: '#FFFFFF',
-    fontSize: 36,
-    fontWeight: '700',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
-  },
-});
