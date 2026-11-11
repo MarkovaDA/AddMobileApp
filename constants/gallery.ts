@@ -15,7 +15,17 @@ export const TILE_GRADIENT_COLORS = [
 export const TILE_GRADIENT_LOCATIONS = [0, 0.45, 1] as const;
 
 export const TILE_ANIMATION = {
-  duration: 420,
-  delayStep: 70,
-  initialTranslateY: 18,
+  duration: 520,
+  delayStep: 80,
+  initialTranslateY: 28,
+  initialScale: 0.94,
+  tension: 70,
+  friction: 10,
+} as const;
+
+export const DETAIL_ANIMATION = {
+  duration: 360,
+  dismissDuration: 280,
+  swipeThreshold: 90,
+  swipeVelocity: 0.45,
 } as const;

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
-import { fonts, GALLERY_GAP, TILE_ASPECT_RATIO } from '../constants';
-import { colors, spacing } from '../theme';
+import { fonts, GALLERY_GAP, TILE_ASPECT_RATIO } from '@/constants';
+import { colors, spacing } from '@/theme';
 
 export const galleryStyles = StyleSheet.create({
   list: {

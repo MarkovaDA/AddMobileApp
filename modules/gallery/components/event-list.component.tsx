@@ -8,39 +8,53 @@ import {
   TILE_ANIMATION,
   TILE_GRADIENT_COLORS,
   TILE_GRADIENT_LOCATIONS,
-} from '../constants';
-import { galleryStyles as styles } from '../styles';
-import type { GalleryProps, PosterTileProps } from '../types';
+} from '@/constants';
+import { galleryStyles as styles } from '@/styles';
+import type { EventListProps, PosterTileProps } from '@/types';
 
-function PosterTile({ item, index }: PosterTileProps) {
+function PosterTile({ item, index, onPress }: PosterTileProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(TILE_ANIMATION.initialTranslateY)).current;
+  const scale = useRef(new Animated.Value(TILE_ANIMATION.initialScale)).current;
 
   useEffect(() => {
+    const delay = index * TILE_ANIMATION.delayStep;
+
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
         duration: TILE_ANIMATION.duration,
-        delay: index * TILE_ANIMATION.delayStep,
+        delay,
         useNativeDriver: true,
       }),
-      Animated.timing(translateY, {
+      Animated.spring(translateY, {
         toValue: 0,
-        duration: TILE_ANIMATION.duration,
-        delay: index * TILE_ANIMATION.delayStep,
+        delay,
+        tension: TILE_ANIMATION.tension,
+        friction: TILE_ANIMATION.friction,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        delay,
+        tension: TILE_ANIMATION.tension,
+        friction: TILE_ANIMATION.friction,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [index, opacity, translateY]);
+  }, [index, opacity, scale, translateY]);
 
   const animatedStyle = {
     opacity,
-    transform: [{ translateY }],
+    transform: [{ translateY }, { scale }],
   };
 
   return (
     <Animated.View style={[styles.tileColumn, animatedStyle]}>
-      <Pressable style={({ pressed }) => [styles.tileWrap, pressed && styles.tilePressed]}>
+      <Pressable
+        style={({ pressed }) => [styles.tileWrap, pressed && styles.tilePressed]}
+        onPress={() => onPress?.(item)}
+      >
         <Image source={item.image} style={styles.image} resizeMode="cover" />
         <LinearGradient
           colors={TILE_GRADIENT_COLORS}
@@ -64,7 +78,11 @@ function PosterTile({ item, index }: PosterTileProps) {
   );
 }
 
-export function Gallery({ items, columns = DEFAULT_GALLERY_COLUMNS }: GalleryProps) {
+export function EventListComponent({
+  items,
+  columns = DEFAULT_GALLERY_COLUMNS,
+  onItemPress,
+}: EventListProps) {
   return (
     <FlatList
       data={items}
@@ -74,7 +92,9 @@ export function Gallery({ items, columns = DEFAULT_GALLERY_COLUMNS }: GalleryPro
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={<Text style={styles.sectionLabel}>{GALLERY_SECTION_LABEL}</Text>}
-      renderItem={({ item, index }) => <PosterTile item={item} index={index} />}
+      renderItem={({ item, index }) => (
+        <PosterTile item={item} index={index} onPress={onItemPress} />
+      )}
     />
   );
 }

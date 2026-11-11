@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
-import { fonts } from '../constants';
-import { colors, spacing } from '../theme';
+import { fonts } from '@/constants';
+import { colors, spacing } from '@/theme';
 
 export const appStyles = StyleSheet.create({
   root: {
