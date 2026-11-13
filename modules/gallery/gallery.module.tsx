@@ -46,9 +46,11 @@ function GalleryModuleFallback() {
   );
 }
 
+const galleryModuleFallback = <GalleryModuleFallback />;
+
 export function LoadGalleryModule(props: GalleryProps) {
   return (
-    <Suspense fallback={<GalleryModuleFallback />}>
+    <Suspense fallback={galleryModuleFallback}>
       <LazyGalleryComponent {...props} />
     </Suspense>
   );

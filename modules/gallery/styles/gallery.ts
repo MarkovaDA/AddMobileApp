@@ -40,7 +40,7 @@ export const galleryStyles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
   },
   pressFlash: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(255, 77, 90, 0.38)',
   },
   ripple: {

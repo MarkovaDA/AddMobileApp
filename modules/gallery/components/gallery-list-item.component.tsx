@@ -5,6 +5,7 @@ import {
   Easing,
   Image,
   PanResponder,
+  type PressableStateCallbackType,
   Pressable,
   ScrollView,
   Text,
@@ -18,26 +19,33 @@ import type { GalleryListItemProps } from '../types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+function getBackButtonStyle({ pressed }: PressableStateCallbackType) {
+  return [styles.backButton, pressed && styles.backButtonPressed];
+}
+
 export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps) {
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const isClosing = useRef(false);
   const onBackRef = useRef(onBack);
+  const isAddingRef = useRef(false);
   const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
 
   onBackRef.current = onBack;
 
   const handleAddToCalendar = useCallback(async () => {
-    if (isAddingToCalendar) {
+    if (isAddingRef.current) {
       return;
     }
 
+    isAddingRef.current = true;
     setIsAddingToCalendar(true);
     try {
       await AddToCalendarService.addEvent(item);
     } finally {
+      isAddingRef.current = false;
       setIsAddingToCalendar(false);
     }
-  }, [isAddingToCalendar, item]);
+  }, [item]);
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -68,6 +76,10 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
       }
     });
   }, [translateX]);
+
+  const handleBackPress = useCallback(() => {
+    closeWithSwipe();
+  }, [closeWithSwipe]);
 
   const panResponder = useMemo(
     () =>
@@ -100,9 +112,21 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
     [closeWithSwipe, translateX],
   );
 
-  const panelStyle = {
-    transform: [{ translateX }],
-  };
+  const panelStyle = useMemo(
+    () => ({
+      transform: [{ translateX }],
+    }),
+    [translateX],
+  );
+
+  const getCalendarButtonStyle = useCallback(
+    ({ pressed }: PressableStateCallbackType) => [
+      styles.calendarButton,
+      pressed && styles.calendarButtonPressed,
+      isAddingToCalendar && styles.calendarButtonDisabled,
+    ],
+    [isAddingToCalendar],
+  );
 
   return (
     <Animated.View style={[styles.root, panelStyle]} {...panResponder.panHandlers}>
@@ -113,10 +137,7 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
         bounces={false}
       >
         {onBack ? (
-          <Pressable
-            style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-            onPress={() => closeWithSwipe(SCREEN_WIDTH)}
-          >
+          <Pressable style={getBackButtonStyle} onPress={handleBackPress}>
             <Text style={styles.backLabel}>← Swipe or tap to go back</Text>
           </Pressable>
         ) : null}
@@ -139,11 +160,7 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
             </View>
 
             <Pressable
-              style={({ pressed }) => [
-                styles.calendarButton,
-                pressed && styles.calendarButtonPressed,
-                isAddingToCalendar && styles.calendarButtonDisabled,
-              ]}
+              style={getCalendarButtonStyle}
               onPress={handleAddToCalendar}
               disabled={isAddingToCalendar}
             >

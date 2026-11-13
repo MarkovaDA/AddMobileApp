@@ -6,7 +6,7 @@ import {
 } from '@expo-google-fonts/roboto';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native';
 
@@ -29,8 +29,12 @@ export default function App() {
     Roboto_500Medium,
     Roboto_700Bold,
   });
-  
+
   const [selectedEvent, setSelectedEvent] = useState<GalleryItem | null>(null);
+
+  const handleBack = useCallback(() => {
+    setSelectedEvent(null);
+  }, []);
 
   if (!fontsLoaded) {
     return (
@@ -52,7 +56,7 @@ export default function App() {
         {selectedEvent ? (
           <GalleryListItemComponent
             item={selectedEvent}
-            onBack={() => setSelectedEvent(null)}
+            onBack={handleBack}
           />
         ) : (
           <>

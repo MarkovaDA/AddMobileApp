@@ -1,11 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
-  GestureResponderEvent,
+  type GestureResponderEvent,
   Image,
+  type ListRenderItemInfo,
   Platform,
+  type PressableStateCallbackType,
   Pressable,
   Text,
   View,
@@ -19,12 +21,24 @@ import {
   TILE_GRADIENT_LOCATIONS,
 } from '@/constants';
 import { galleryStyles as styles } from '../styles';
-import type { EventListProps, PosterTileProps } from '../types';
+import type { EventListProps, GalleryItem, PosterTileProps } from '../types';
 
 const RIPPLE_SIZE = 160;
 const PRESS_NAVIGATION_DELAY_MS = Platform.OS === 'web' ? 220 : 120;
 
-function PosterTile({ item, index, onPress }: PosterTileProps) {
+function keyExtractor(item: GalleryItem) {
+  return item.id;
+}
+
+function getTileWrapStyle({ pressed }: PressableStateCallbackType) {
+  return [styles.tileWrap, pressed && styles.tilePressed];
+}
+
+const listHeader = (
+  <Text style={styles.sectionLabel}>{GALLERY_SECTION_LABEL}</Text>
+);
+
+const PosterTile = memo(function PosterTile({ item, index, onPress }: PosterTileProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(TILE_ANIMATION.initialTranslateY)).current;
   const scale = useRef(new Animated.Value(TILE_ANIMATION.initialScale)).current;
@@ -33,6 +47,11 @@ function PosterTile({ item, index, onPress }: PosterTileProps) {
   const flashOpacity = useRef(new Animated.Value(0)).current;
   const [rippleOrigin, setRippleOrigin] = useState({ x: 0, y: 0 });
   const navigateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onPressRef = useRef(onPress);
+  const itemRef = useRef(item);
+
+  onPressRef.current = onPress;
+  itemRef.current = item;
 
   useEffect(() => {
     const delay = index * TILE_ANIMATION.delayStep;
@@ -67,61 +86,80 @@ function PosterTile({ item, index, onPress }: PosterTileProps) {
     };
   }, [index, opacity, scale, translateY]);
 
-  const runRipple = (event: GestureResponderEvent) => {
-    const nativeEvent = event.nativeEvent as GestureResponderEvent['nativeEvent'] & {
-      offsetX?: number;
-      offsetY?: number;
-    };
-    const x = nativeEvent.locationX ?? nativeEvent.offsetX ?? RIPPLE_SIZE / 2;
-    const y = nativeEvent.locationY ?? nativeEvent.offsetY ?? RIPPLE_SIZE / 2;
+  const runRipple = useCallback(
+    (event: GestureResponderEvent) => {
+      const nativeEvent = event.nativeEvent as GestureResponderEvent['nativeEvent'] & {
+        offsetX?: number;
+        offsetY?: number;
+      };
+      const x = nativeEvent.locationX ?? nativeEvent.offsetX ?? RIPPLE_SIZE / 2;
+      const y = nativeEvent.locationY ?? nativeEvent.offsetY ?? RIPPLE_SIZE / 2;
 
-    setRippleOrigin({ x, y });
-    rippleScale.setValue(0.15);
-    rippleOpacity.setValue(0.95);
-    flashOpacity.setValue(0.45);
+      setRippleOrigin({ x, y });
+      rippleScale.setValue(0.15);
+      rippleOpacity.setValue(0.95);
+      flashOpacity.setValue(0.45);
 
-    Animated.parallel([
-      Animated.timing(rippleScale, {
-        toValue: 3.2,
-        duration: 520,
-        useNativeDriver: true,
-      }),
-      Animated.timing(rippleOpacity, {
-        toValue: 0,
-        duration: 520,
-        useNativeDriver: true,
-      }),
-      Animated.timing(flashOpacity, {
-        toValue: 0,
-        duration: 320,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
+      Animated.parallel([
+        Animated.timing(rippleScale, {
+          toValue: 3.2,
+          duration: 520,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rippleOpacity, {
+          toValue: 0,
+          duration: 520,
+          useNativeDriver: true,
+        }),
+        Animated.timing(flashOpacity, {
+          toValue: 0,
+          duration: 320,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    },
+    [flashOpacity, rippleOpacity, rippleScale],
+  );
 
-  const handlePress = (event: GestureResponderEvent) => {
-    runRipple(event);
+  const handlePress = useCallback(
+    (event: GestureResponderEvent) => {
+      runRipple(event);
 
-    if (navigateTimeout.current) {
-      clearTimeout(navigateTimeout.current);
-    }
+      if (navigateTimeout.current) {
+        clearTimeout(navigateTimeout.current);
+      }
 
-    navigateTimeout.current = setTimeout(() => {
-      onPress?.(item);
-    }, PRESS_NAVIGATION_DELAY_MS);
-  };
+      navigateTimeout.current = setTimeout(() => {
+        onPressRef.current?.(itemRef.current);
+      }, PRESS_NAVIGATION_DELAY_MS);
+    },
+    [runRipple],
+  );
 
-  const animatedStyle = {
-    opacity,
-    transform: [{ translateY }, { scale }],
-  };
+  const animatedStyle = useMemo(
+    () => ({
+      opacity,
+      transform: [{ translateY }, { scale }],
+    }),
+    [opacity, scale, translateY],
+  );
+
+  const rippleStyle = useMemo(
+    () => [
+      styles.ripple,
+      {
+        left: rippleOrigin.x - RIPPLE_SIZE / 2,
+        top: rippleOrigin.y - RIPPLE_SIZE / 2,
+        opacity: rippleOpacity,
+        transform: [{ scale: rippleScale }],
+      },
+    ],
+    [rippleOpacity, rippleOrigin.x, rippleOrigin.y, rippleScale],
+  );
 
   return (
     <Animated.View style={[styles.tileColumn, animatedStyle]}>
-      <Pressable
-        style={({ pressed }) => [styles.tileWrap, pressed && styles.tilePressed]}
-        onPress={handlePress}
-      >
+      <Pressable style={getTileWrapStyle} onPress={handlePress}>
         <Image source={item.image} style={styles.image} resizeMode="cover" />
         <LinearGradient
           colors={TILE_GRADIENT_COLORS}
@@ -145,40 +183,34 @@ function PosterTile({ item, index, onPress }: PosterTileProps) {
           pointerEvents="none"
           style={[styles.pressFlash, { opacity: flashOpacity }]}
         />
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.ripple,
-            {
-              left: rippleOrigin.x - RIPPLE_SIZE / 2,
-              top: rippleOrigin.y - RIPPLE_SIZE / 2,
-              opacity: rippleOpacity,
-              transform: [{ scale: rippleScale }],
-            },
-          ]}
-        />
+        <Animated.View pointerEvents="none" style={rippleStyle} />
       </Pressable>
     </Animated.View>
   );
-}
+});
 
 export function EventListComponent({
   items,
   columns = DEFAULT_GALLERY_COLUMNS,
   onItemPress,
 }: EventListProps) {
+  const renderItem = useCallback(
+    ({ item, index }: ListRenderItemInfo<GalleryItem>) => (
+      <PosterTile item={item} index={index} onPress={onItemPress} />
+    ),
+    [onItemPress],
+  );
+
   return (
     <FlatList
       data={items}
-      keyExtractor={(item) => item.id}
+      keyExtractor={keyExtractor}
       numColumns={columns}
       columnWrapperStyle={styles.columnWrapper}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={<Text style={styles.sectionLabel}>{GALLERY_SECTION_LABEL}</Text>}
-      renderItem={({ item, index }) => (
-        <PosterTile item={item} index={index} onPress={onItemPress} />
-      )}
+      ListHeaderComponent={listHeader}
+      renderItem={renderItem}
     />
   );
 }
