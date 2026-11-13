@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 
 import { DETAIL_ANIMATION } from '@/constants';
-import { AddToCalendarService } from '@/services';
-import { galleryListItemStyles as styles } from '@/styles';
-import type { GalleryListItemProps } from '@/types';
+import { AddToCalendarService } from '../services';
+import { galleryListItemStyles as styles } from '../styles';
+import type { GalleryListItemProps } from '../types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 

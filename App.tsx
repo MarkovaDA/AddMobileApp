@@ -21,7 +21,7 @@ import { MOSCOW_EVENTS } from '@/data/events';
 import { GalleryListItemComponent, LoadGalleryModule } from '@/modules/gallery';
 import { appStyles as styles } from '@/styles';
 import { colors } from '@/theme';
-import type { GalleryItem } from '@/types';
+import type { GalleryItem } from '@/modules/gallery/types';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,6 +29,7 @@ export default function App() {
     Roboto_500Medium,
     Roboto_700Bold,
   });
+  
   const [selectedEvent, setSelectedEvent] = useState<GalleryItem | null>(null);
 
   if (!fontsLoaded) {

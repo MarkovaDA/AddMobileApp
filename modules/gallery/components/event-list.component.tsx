@@ -18,8 +18,8 @@ import {
   TILE_GRADIENT_COLORS,
   TILE_GRADIENT_LOCATIONS,
 } from '@/constants';
-import { galleryStyles as styles } from '@/styles';
-import type { EventListProps, PosterTileProps } from '@/types';
+import { galleryStyles as styles } from '../styles';
+import type { EventListProps, PosterTileProps } from '../types';
 
 const RIPPLE_SIZE = 160;
 const PRESS_NAVIGATION_DELAY_MS = Platform.OS === 'web' ? 220 : 120;

@@ -1,6 +1,6 @@
 import { Alert, Linking, Platform } from 'react-native';
 
-import type { GalleryItem } from '@/types';
+import type { GalleryItem } from '@/modules/gallery/types';
 
 const EVENT_DURATION_MS = 2 * 60 * 60 * 1000;
 const TIME_ZONE = 'Europe/Moscow';

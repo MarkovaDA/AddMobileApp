@@ -5,4 +5,4 @@ export {
   GalleryModule,
   LoadGalleryModule,
 } from './gallery.module';
-export type { GalleryModuleType } from '@/types';
+export type { GalleryModuleType } from './types';

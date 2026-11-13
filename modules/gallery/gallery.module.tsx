@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { appStyles as styles } from '@/styles';
 import { colors } from '@/theme';
-import type { GalleryModuleType, GalleryProps } from '@/types';
+import type { GalleryModuleType, GalleryProps } from './types';
 import {
   EventListComponent,
   GalleryComponent,

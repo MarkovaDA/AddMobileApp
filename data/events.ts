@@ -1,4 +1,4 @@
-import type { GalleryItem } from '@/types';
+import type { GalleryItem } from '@/modules/gallery/types';
 
 export const MOSCOW_EVENTS: GalleryItem[] = [
   {
