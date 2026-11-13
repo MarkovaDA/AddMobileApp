@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { DETAIL_ANIMATION } from '@/constants';
+import { AddToCalendarService } from '@/services';
 import { galleryListItemStyles as styles } from '@/styles';
 import type { GalleryListItemProps } from '@/types';
 
@@ -21,8 +22,22 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const isClosing = useRef(false);
   const onBackRef = useRef(onBack);
-  
+  const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
+
   onBackRef.current = onBack;
+
+  const handleAddToCalendar = useCallback(async () => {
+    if (isAddingToCalendar) {
+      return;
+    }
+
+    setIsAddingToCalendar(true);
+    try {
+      await AddToCalendarService.addEvent(item);
+    } finally {
+      setIsAddingToCalendar(false);
+    }
+  }, [isAddingToCalendar, item]);
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -122,6 +137,20 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
               <Text style={styles.sectionLabel}>About</Text>
               <Text style={styles.description}>{item.description}</Text>
             </View>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.calendarButton,
+                pressed && styles.calendarButtonPressed,
+                isAddingToCalendar && styles.calendarButtonDisabled,
+              ]}
+              onPress={handleAddToCalendar}
+              disabled={isAddingToCalendar}
+            >
+              <Text style={styles.calendarButtonLabel}>
+                {isAddingToCalendar ? 'Opening calendar…' : 'Add to calendar'}
+              </Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "AddMobileApp",
     "slug": "AddMobileApp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Allow AddMobileApp to add events to your calendar."
+        }
+      ]
     ],
     "extra": {
       "eas": {

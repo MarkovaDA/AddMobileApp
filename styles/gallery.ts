@@ -34,10 +34,21 @@ export const galleryStyles = StyleSheet.create({
     backgroundColor: colors.inkSoft,
   },
   tilePressed: {
-    opacity: 0.9,
+    transform: [{ scale: 0.985 }],
   },
   image: {
     ...StyleSheet.absoluteFill,
+  },
+  pressFlash: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 77, 90, 0.38)',
+  },
+  ripple: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(255, 120, 130, 0.85)',
   },
   tile: {
     flex: 1,

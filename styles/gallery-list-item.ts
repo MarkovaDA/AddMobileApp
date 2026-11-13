@@ -84,4 +84,26 @@ export const galleryListItemStyles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
   },
+  calendarButton: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: spacing.md,
+    borderRadius: 14,
+    backgroundColor: colors.accent,
+  },
+  calendarButtonPressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.985 }],
+  },
+  calendarButtonDisabled: {
+    opacity: 0.7,
+  },
+  calendarButtonLabel: {
+    color: colors.paper,
+    fontFamily: fonts.bold,
+    fontSize: 15,
+    letterSpacing: 0.3,
+  },
 });

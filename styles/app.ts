@@ -1,7 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 import { fonts } from '@/constants';
 import { colors, spacing } from '@/theme';
+
+const androidTopInset = StatusBar.currentHeight ?? 24;
 
 export const appStyles = StyleSheet.create({
   root: {
@@ -19,10 +21,12 @@ export const appStyles = StyleSheet.create({
   },
   safe: {
     flex: 1,
+    paddingTop:
+      Platform.OS === 'android' ? androidTopInset + 36 : 36,
   },
   header: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     gap: spacing.sm,
   },

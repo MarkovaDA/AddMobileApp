@@ -7,6 +7,8 @@ export type GalleryItem = {
   category: string;
   place: string;
   date: string;
+  /** ISO datetime used for calendar export */
+  startAt: string;
   image: ImageSourcePropType;
   description: string;
 };
