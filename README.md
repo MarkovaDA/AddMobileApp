@@ -6,9 +6,9 @@
 
 Актуальная APK-сборка:
 
-**[Скачать AddMobileApp (Android APK)](https://expo.dev/accounts/dmarkova_expo/projects/AddMobileApp/builds/3ed31863-c075-416c-b185-7b3ef023add9)**
+**[Скачать AddMobileApp (Android APK)](https://expo.dev/accounts/dmarkova_expo/projects/AddMobileApp/builds/4301ec8c-7f0b-4838-8dc4-8fcc35e3e353)**
 
-Страница сборки: https://expo.dev/accounts/dmarkova_expo/projects/AddMobileApp/builds/3ed31863-c075-416c-b185-7b3ef023add9
+Страница сборки: https://expo.dev/accounts/dmarkova_expo/projects/AddMobileApp/builds/4301ec8c-7f0b-4838-8dc4-8fcc35e3e353
 
 ### Установка на Android
 
