@@ -1,1 +1,1 @@
-export { appStyles } from './app';
+export { appStyles } from './app.style';

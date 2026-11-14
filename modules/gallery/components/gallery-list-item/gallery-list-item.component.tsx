@@ -5,29 +5,32 @@ import {
   Easing,
   Image,
   PanResponder,
-  type PressableStateCallbackType,
   Pressable,
   ScrollView,
   Text,
   View,
 } from 'react-native';
 
-import { DETAIL_ANIMATION } from '@/constants';
-import { AddToCalendarService } from '../services';
-import { galleryListItemStyles as styles } from '../styles';
-import type { GalleryListItemProps } from '../types';
+import { DETAIL_ANIMATION } from '@/modules/gallery/constants';
+import { AddToCalendarService } from '@/modules/gallery/services';
+import type { GalleryListItemProps } from '@/modules/gallery/types';
+import {
+  getBackButtonStyle,
+  getCalendarButtonStyle,
+  shouldCaptureHorizontalSwipe,
+  shouldDismissDetail,
+} from '@/modules/gallery/utils';
+
+import { galleryListItemStyles as styles } from './gallery-list-item.style';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-function getBackButtonStyle({ pressed }: PressableStateCallbackType) {
-  return [styles.backButton, pressed && styles.backButtonPressed];
-}
 
 export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps) {
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const isClosing = useRef(false);
   const onBackRef = useRef(onBack);
   const isAddingRef = useRef(false);
+
   const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
 
   onBackRef.current = onBack;
@@ -38,7 +41,9 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
     }
 
     isAddingRef.current = true;
+    
     setIsAddingToCalendar(true);
+
     try {
       await AddToCalendarService.addEvent(item);
     } finally {
@@ -85,18 +90,14 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gesture) =>
-          gesture.dx > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+          shouldCaptureHorizontalSwipe(gesture),
         onPanResponderMove: (_, gesture) => {
           if (gesture.dx > 0) {
             translateX.setValue(gesture.dx);
           }
         },
         onPanResponderRelease: (_, gesture) => {
-          const shouldClose =
-            gesture.dx > DETAIL_ANIMATION.swipeThreshold ||
-            gesture.vx > DETAIL_ANIMATION.swipeVelocity;
-
-          if (shouldClose) {
+          if (shouldDismissDetail(gesture)) {
             closeWithSwipe(SCREEN_WIDTH);
             return;
           }
@@ -119,12 +120,8 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
     [translateX],
   );
 
-  const getCalendarButtonStyle = useCallback(
-    ({ pressed }: PressableStateCallbackType) => [
-      styles.calendarButton,
-      pressed && styles.calendarButtonPressed,
-      isAddingToCalendar && styles.calendarButtonDisabled,
-    ],
+  const calendarButtonStyle = useMemo(
+    () => getCalendarButtonStyle(isAddingToCalendar),
     [isAddingToCalendar],
   );
 
@@ -160,7 +157,7 @@ export function GalleryListItemComponent({ item, onBack }: GalleryListItemProps)
             </View>
 
             <Pressable
-              style={getCalendarButtonStyle}
+              style={calendarButtonStyle}
               onPress={handleAddToCalendar}
               disabled={isAddingToCalendar}
             >

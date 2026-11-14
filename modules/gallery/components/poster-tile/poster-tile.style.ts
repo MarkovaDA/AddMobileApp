@@ -1,26 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-import { fonts, GALLERY_GAP, TILE_ASPECT_RATIO } from '@/constants';
-import { colors, spacing } from '@/theme';
+import { fonts } from '@/constants';
+import { TILE_ASPECT_RATIO } from '@/modules/gallery/constants';
+import { colors } from '@/theme';
 
-export const galleryStyles = StyleSheet.create({
-  list: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.md,
-    rowGap: GALLERY_GAP,
-  },
-  columnWrapper: {
-    gap: GALLERY_GAP,
-  },
-  sectionLabel: {
-    color: colors.muted,
-    fontFamily: fonts.medium,
-    fontSize: 13,
-    letterSpacing: 1.4,
-    textTransform: 'uppercase',
-    marginBottom: spacing.sm,
-  },
+export const posterTileStyles = StyleSheet.create({
   tileColumn: {
     flex: 1,
   },
@@ -37,10 +21,18 @@ export const galleryStyles = StyleSheet.create({
     transform: [{ scale: 0.985 }],
   },
   image: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   pressFlash: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: 'rgba(255, 77, 90, 0.38)',
   },
   ripple: {

@@ -29,3 +29,5 @@ export const DETAIL_ANIMATION = {
   swipeThreshold: 90,
   swipeVelocity: 0.45,
 } as const;
+
+export const RIPPLE_SIZE = 160;

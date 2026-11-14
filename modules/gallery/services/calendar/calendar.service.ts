@@ -1,32 +1,9 @@
 import { Alert, Linking, Platform } from 'react-native';
 
 import type { GalleryItem } from '@/modules/gallery/types';
+import { buildGoogleCalendarUrl, getEventWindow } from '@/modules/gallery/utils';
 
-const EVENT_DURATION_MS = 2 * 60 * 60 * 1000;
 const TIME_ZONE = 'Europe/Moscow';
-
-function toCalendarStamp(date: Date) {
-  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-}
-
-function getEventWindow(item: GalleryItem) {
-  const startDate = new Date(item.startAt);
-  const endDate = new Date(startDate.getTime() + EVENT_DURATION_MS);
-  return { startDate, endDate };
-}
-
-function buildGoogleCalendarUrl(item: GalleryItem) {
-  const { startDate, endDate } = getEventWindow(item);
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: item.title,
-    dates: `${toCalendarStamp(startDate)}/${toCalendarStamp(endDate)}`,
-    details: item.description,
-    location: item.place,
-  });
-
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
 
 async function openGoogleCalendar(item: GalleryItem) {
   const url = buildGoogleCalendarUrl(item);

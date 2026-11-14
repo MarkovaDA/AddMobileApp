@@ -1,3 +1,7 @@
-export { EventListComponent } from './event-list.component';
-export { GalleryComponent } from './gallery.component';
-export { GalleryListItemComponent } from './gallery-list-item.component';
+export { GalleryListComponent, galleryListStyles } from './gallery-list';
+export {
+  GalleryListItemComponent,
+  galleryListItemStyles,
+} from './gallery-list-item';
+
+export { PosterTile, posterTileStyles } from './poster-tile';

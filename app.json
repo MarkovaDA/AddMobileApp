@@ -5,6 +5,7 @@
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "scheme": "addmobileapp",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -29,8 +30,12 @@
         {
           "calendarPermission": "Allow AddMobileApp to add events to your calendar."
         }
-      ]
+      ],
+      "expo-router"
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "eas": {
         "projectId": "82f30590-ebcd-4e53-a811-41c653279208"
